@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>商品展示</title>
+    <link rel="stylesheet" href="/js/bootstrop/css/bootstrap.min.css">
+    <link rel="icon" href="/js/shop/assets/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="/js/shop/css/webbase.css" />
+    <link rel="stylesheet" type="text/css" href="/js/shop/css/pages-JD-index.css" />
+    <link rel="stylesheet" type="text/css" href="/js/shop/css/widget-jquery.autocomplete.css" />
+    <link rel="stylesheet" type="text/css" href="/js/shop/css/widget-cartPanelView.css" />
+</head>
+<body>
+<div id="nav"></div>
+
+
+
+<div id="nav-bottom">
+    <!--顶部-->
+    <div class="nav-top">
+        <!--头部-->
+        <div class="header">
+            <div class="py-container">
+                <div class="yui3-g NavList">
+                    <div class="yui3-u Left all-sort">
+                        <h4>全部商品分类</h4>
+                    </div>
+                    <div class="yui3-u Center navArea">
+                        <ul class="nav">
+                            <li class="f-item">服装城</li>
+                            <li class="f-item">美妆馆</li>
+                            <li class="f-item">品优超市</li>
+                            <li class="f-item">全球购</li>
+                            <li class="f-item">闪购</li>
+                            <li class="f-item">团购</li>
+                            <li class="f-item">有趣</li>
+                        </ul>
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--列表-->
+<div class="sort">
+    <div class="py-container">
+        <div class="yui3-g SortList ">
+            <div class="yui3-u Left all-sort-list">
+                <div class="all-sort-list2" id="classifyDiv">
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="container">
+    <h3>热销品牌</h3>
+    <div class="row" >
+        <div class="panel panel-info">
+            <div class="panel-heading">品牌</div>
+            <div class="panel-body">
+                <form class="form-horizontal">
+                    <div id="brandDiv"></div>
+                </form>
+            </div>
+        </div>
+        <div class="panel panel-info">
+            <div class="panel-heading">商品</div>
+            <div class="panel-body">
+                <form class="form-horizontal">
+                    <div id="shopDiv"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="shopList" style="display: none">
+    <div class="col-sm-4 ">
+        <div class="thumbnail">
+            <img src="##imgPath##" width="50px">
+            <div class="caption">
+                <h3>商品名：##shopname##</h3>
+                <p>价格：##price##</p>
+                <p><a href="#" class="btn btn-primary" role="button" id="bshop" onclick="buyShop('##shopId##','add')">加入购物车</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="brandList" style="display: none">
+    <div class="col-sm-4 ">
+        <div class="thumbnail">
+            <div class="caption">
+                <h3>品牌名：##brandname##</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script src="/js/jquery-3.3.1.js"></script>
+<script src="/js/bootstrop/js/bootstrap.min.js"></script>
+<script src="js/jquery.cookie.min.js"></script>
+<script src="common/nav.js"></script>
+<script src="/js/bootbox/bootbox.min.js"></script>
+<script src="/js/bootbox/bootbox.locales.min.js"></script>
+<script>
+    $(function () {
+        //初始化商品列表
+        initShopList();
+        //初始化品牌列表
+        initBrandList();
+        //初始化分类列表
+        initClassifyList();
+        //initMemberInfo();
+    })
+
+    //会员的信息
+    /*function initMemberInfo(){
+        $(function(){
+            $.ajax({
+                url:"http://localhost:8081/members/findMemberName",
+                type:"get",
+                success:function(result){
+                    if(result.code==200){
+                        $("#login").html('<a>欢迎'+ result.data +'登录</a>');
+                        $("#login").next().html("<a onclick='logiOut()'>退出</a>");
+                    }
+                }
+            })
+        })
+    }*/
+
+    //退出
+    /*function logiOut() {
+        $.ajax({
+            url:"http://localhost:8081/members/loginOut",
+            type:"get",
+            beforeSend:function(request){
+                var value=$.cookie("x-auth");
+                console.log(value);
+                request.setRequestHeader("x-auth",value);
+            },
+            success:function(result){
+                if(result.code==200){
+                    $.removeCookie("x-auth");
+                    location.href="/";
+                }
+            }
+        })
+    }*/
+
+
+
+    function register() {
+        location.href="register.html";
+    }
+
+    function initCss() {
+        $('.all-sort-list2 > .item').hover(function() {
+            //父类分类列表容器的高度
+
+            $(this).addClass('hover');
+            $(this).children('.item-list').css('display', 'block');
+        }, function() {
+            $(this).removeClass('hover');
+            $(this).children('.item-list').css('display', 'none');
+        });
+
+        $('.item > .item-list > .close').click(function() {
+            $(this).parent().parent().removeClass('hover');
+            $(this).parent().hide();
+        });
+    }
+
+    //上架商品
+    function initShopList() {
+        $.ajax({
+            "url":"http://localhost:8081/shop/queryShopJson.jhtml" ,
+            "type":"post",
+            success:function (result) {
+                if(result.code==200){
+                    //console.log(result);
+                    var v_shopList=result.data;
+                    var v_shopDiv=$("#shopList").html();
+                    for(var i=0;i<v_shopList.length;i++){
+                        //replace(/##imgPath##/g,v_shopList[i].imgPath)
+                        var v_shop=v_shopDiv.replace(/##imgPath##/g,v_shopList[i].imgPath)
+                            .replace(/##shopname##/g,v_shopList[i].shopname)
+                            .replace(/##shopId##/g,v_shopList[i].id)
+                            .replace(/##price##/g,v_shopList[i].price);
+                        $("#shopDiv").append(v_shop);
+                    }
+
+                }
+            }
+        })
+    }
+    //热销品牌
+    function initBrandList() {
+        $.ajax({
+            url:"http://localhost:8081/brand/queryBrandJson.jhtml",
+            type:"post",
+            success:function (result) {
+                if(result.code==200){
+                    console.log(result);
+                    var v_brandList=result.data;
+                    var v_brandDiv=$("#brandList").html();
+                    for (var i=0;i<v_brandList.length;i++){
+                        var v_brand=v_brandDiv.replace(/##brandname##/g,v_brandList[i].brandname);
+                        $("#brandDiv").append(v_brand);
+                    }
+                }
+            }
+        })
+    }
+
+    //分类
+    var classifyArr;
+    var v_html="";
+    function initClassifyList() {
+        $.post({
+            url:"http://localhost:8081/classify/queryAll.jhtml",
+            success:function (result) {
+                if(result.code==200){
+                     classifyArr=result.data;
+                    buildClassify1(0);
+
+                    $("#classifyDiv").html(v_html);
+                    initCss();
+                }
+            }
+        })
+    }
+
+    //构建分类的1级下拉
+    function buildClassify1(id) {
+        var v_childs1=getChilds(id);
+        for(var i=0;i<v_childs1.length;i++){
+            v_html+='<div class="item">';
+            v_html+='<h3><a href="">'+v_childs1[i].classifyName+'</a></h3>';
+            v_html+='<div class="item-list clearfix">';
+            v_html+='<div class="subitem">';
+            buildClassify2(v_childs1[i].id);
+            v_html+='</div >';
+            v_html+='</div >';
+            v_html+='</div >';
+        }
+
+    }
+
+    //分类二级目录
+    function buildClassify2(id) {
+        var v_childs2=getChilds(id);
+        for(var i=0;i<v_childs2.length;i++){
+            v_html+='<dl class="fore'+(i+1)+'">';
+            v_html+='<dt><a href="">'+v_childs2[i].classifyName+'</a></dt>';
+            v_html+='<dd>';
+            buildClassify3(v_childs2[i].id);
+            v_html+="</dd>";
+            v_html+="</dl>";
+        }
+    }
+
+    function buildClassify3(id) {
+        var v_childs3=getChilds(id);
+        for(var i=0;i<v_childs3.length;i++){
+            v_html+= '<em><a href="">'+v_childs3[i].classifyName+'</a></em>';
+        }
+    }
+
+    //获取节点下的孩子
+    function getChilds(id) {
+        var childs=[];
+        for(var i=0;i<classifyArr.length;i++){
+            if(classifyArr[i].pid==id){
+                childs.push(classifyArr[i]);
+            }
+        }
+        return childs;
+    }
+
+
+</script>
+</body>
+</html>

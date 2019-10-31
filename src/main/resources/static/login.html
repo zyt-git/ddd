@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+    <link rel="stylesheet" href="/js/bootstrop/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/js/bootstrop/signin.css">
+
+</head>
+<body>
+
+
+
+
+<div>
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">账号登录</a></li>
+        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">手机号登录</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="home">
+            <form class="form-signin">
+                <h1 class="h3 mb-3 font-weight-normal">请登录</h1>
+                <input type="text" id="memberName" class="form-control" placeholder="请输入用户名"  autocomplete="off" /><font id="font1"></font> <!-- required -->
+                <input type="password" id="password" class="form-control" placeholder="请输入密码"   autocomplete="off" /><font id="font2"></font>
+                <button class="btn btn-lg btn-info btn-block"  type="button" onclick="login()">登录</button>
+                <br>
+            </form>
+
+        </div>
+        <div role="tabpanel" class="tab-pane" id="profile">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label  class="col-sm-3 control-label">手机号</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="phone"  onblur="onPhone()" placeholder="请输入手机号...">
+                    </div>
+                    <button class="btn btn-info" onclick="sendCode()" type="button" >发送验证码</button>
+
+                </div>
+                <font id="font3"></font>
+                <div class="form-group">
+                    <label  class="col-sm-3 control-label">验证码</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="code"  placeholder="请输入验证码...">
+                    </div>
+                </div>
+                <button class="btn btn-lg btn-info btn-block"  type="button" onclick="loginPhone()">登录</button>
+                <br>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script src="/js/jquery-3.3.1.js"></script>
+<script src="/js/bootstrop/js/bootstrap.min.js"></script>
+<script src="js/jquery.cookie.min.js"></script>
+<script>
+    function login() {
+        var  memberName=$("#memberName").val();
+        var  password=$("#password").val();
+        $.post({
+            url:"http://localhost:8081/members/login",
+            data:{"memberName":memberName,"password":password},
+            success:function (result) {
+                if(result.code==200){
+                    $.cookie("x-auth",result.data);
+                    location.href="/";
+
+                }
+            }
+        })
+    }
+
+    function loginPhone() {
+        var v_phone=$("#phone").val();
+        var v_code=$("#code").val();
+        $.post({
+            url:"http://localhost:8081/members/loginPhone",
+            data:{"phone":v_phone,"code":v_code},
+            success:function (result) {
+                if(result.code==200){
+                    $.cookie("x-auth",result.data);
+                    location.href="/";
+
+                }
+            }
+        })
+    }
+
+    function sendCode() {
+        var v_phone=$("#phone").val();
+        $.ajax({
+            type:"get",
+            url:"http://localhost:8081/sms?phone="+v_phone,
+            success:function (result) {
+                if(result.code==200){
+                    alert("验证码获取成功");
+                }else{
+                    alert(result.msg);
+                }
+            }
+        })
+    }
+
+    function onPhone() {
+        var v_phone=$("#phone").val();
+        if(v_phone==""){
+            $("#font3").css("color","red");
+            $("#font3").html("手机号不能为空");
+        }else{
+            $.ajax({
+                type:"get",
+                url:"http://localhost:8081/members/LoginQueryPhone?phone="+v_phone,
+                success:function (result) {
+                    if(result.code==200){
+                        $("#font3").css("color","");
+                        $("#font3").html("");
+                    }else{
+                        $("#font3").css("color","red");
+                        $("#font3").html(result.msg);
+                    }
+                }
+            })
+        }
+    }
+</script>
+</body>
+</html>

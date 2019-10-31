@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/js/bootstrop/css/bootstrap.min.css">
+</head>
+<body>
+
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">飞狐电商</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+
+            </ul>
+            </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" id="memberNameLi"></a>
+                </li>
+                <li class="dropdown">
+                    <a href="login.html">登录</a>
+                </li>
+                <li class="dropdown">
+                    <a href="register.html">注册</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<script src="/js/jquery-3.3.1.js"></script>
+<script src="js/cookie.js"></script>
+<script>
+    $(function(){
+        $.ajax({
+            url:"http://localhost:8081/members/findMemberName",
+            type:"get",
+            success:function(result){
+                if(result.code==200){
+                    $("#memberNameLi").html("用户："+result.data);
+                }
+            }
+        })
+    })
+</script>
+</body>
+</html>
